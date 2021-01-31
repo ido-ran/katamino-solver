@@ -2,14 +2,14 @@
 const ROWS = 5;
 
 function createBoard(columns) {
-    const board = [];
+    const cells = [];
     for (let col = 0; col < columns; col++) {
         for (let row = 0; row < ROWS; row++) {
-                board.push(0);
+            cells.push(0);
         }
     }
     return {
-        board,
+        cells,
         columns
     };
 }
@@ -57,7 +57,7 @@ function createPenta(pentaNumber, cols, str) {
         }
     }
 
-    return { penta, rows, cols };
+    return { penta, rows, cols, id: pentaNumber };
 }
 
 /**
@@ -89,7 +89,7 @@ function rotatePenta90(penta) {
         }
     }
 
-    return { penta: penta90, cols: cols90, rows: rows90 };
+    return { penta: penta90, cols: cols90, rows: rows90, id: penta.id };
 }
 
 /**
@@ -121,10 +121,8 @@ function mirrowPenta(penta) {
         }
     }
 
-    return { penta: pentaM, rows, cols }
+    return { penta: pentaM, rows, cols, id: penta.id }
 }
-
-const board = createBoard(3)
 
 const pentas = [
     [],
@@ -155,13 +153,61 @@ const pentas = [
     ),
 ];
 
-const m = mirrowPenta(pentas[3]);
+function pentaToString(penta) {
+    let strRows = [];
 
-function solve(pentas, pentasIndecies) {
-    return 4;
+    for (let row = 0; row < penta.rows; row++) {
+        let strRow = '';
+        for (let col = 0; col < penta.cols; col++) {
+            const index = col * penta.rows + row;
+            const value = penta.penta[index];
+            const cellStr = value === 0 ? '#' : value.toString();
+            strRow += cellStr;
+        }
+        strRows.push(strRow);
+    }
+
+    const pentaStr = strRows.join('\n');
+    return pentaStr;
 }
 
-const solution = solve(pentas, [2, 3, 4]);
+const m = mirrowPenta(pentas[3]);
+
+const p3 = pentaToString(pentas[3]);
+const p3m = pentaToString(m);
+
+console.log(p3);
+console.log("---");
+console.log(p3m);
+
+const p3r = rotatePenta90(pentas[3]);
+console.log("---");
+console.log(pentaToString(p3r));
+
+console.log("---");
+console.log(pentaToString(rotatePenta90(p3r)));
+
+function solve(allPentas, pentasIndecies) {
+    const board = createBoard(3);
+    const pentas = allPentas.filter((penta) => pentasIndecies.indexOf(penta.id) !== -1);
+    const solution = innerSolve(0, pentas, board);
+    return solution;
+}
+
+function findEmptyCell(board) {
+    const emptyCellIndex = board.cells.indexOf(0);
+
+}
+
+function innerSolve(level, pentas, board) {
+    const emptyCellIndex = board.cells.indexOf(0);
+    if (emptyCellIndex === -1) {
+        console.log('no empty cells');
+        return;
+    }
+}
+
+const solution = solve(pentas, [2, 3, 10]);
 console.log(solution);
 
 //printBoard(board);
