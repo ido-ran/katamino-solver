@@ -107,7 +107,7 @@ function rotatePenta90(penta) {
  * 2[6]    [2] 6
  * 3[7]    [3] 7
  */
-function mirrowPenta(penta) {
+function mirrorPenta(penta) {
     const pentaM = [];
     const { rows, cols } = penta;
 
@@ -161,7 +161,7 @@ function pentaToString(penta) {
         for (let col = 0; col < penta.cols; col++) {
             const index = col * penta.rows + row;
             const value = penta.penta[index];
-            const cellStr = value === 0 ? '#' : value.toString();
+            const cellStr = value === 0 ? '#' : value.toString(16);
             strRow += cellStr;
         }
         strRows.push(strRow);
@@ -170,22 +170,6 @@ function pentaToString(penta) {
     const pentaStr = strRows.join('\n');
     return pentaStr;
 }
-
-const m = mirrowPenta(pentas[3]);
-
-const p3 = pentaToString(pentas[3]);
-const p3m = pentaToString(m);
-
-console.log(p3);
-console.log("---");
-console.log(p3m);
-
-const p3r = rotatePenta90(pentas[3]);
-console.log("---");
-console.log(pentaToString(p3r));
-
-console.log("---");
-console.log(pentaToString(rotatePenta90(p3r)));
 
 function solve(allPentas, pentasIndecies) {
     const board = createBoard(3);
@@ -205,6 +189,39 @@ function innerSolve(level, pentas, board) {
         console.log('no empty cells');
         return;
     }
+}
+
+// const m = mirrowPenta(pentas[3]);
+// const p3r = rotatePenta90(pentas[2]);
+// const p3m = pentaToString(2);
+
+const pentasWithReotation = [];
+
+for (let pentaIndex = 1; pentaIndex < pentas.length; pentaIndex++) {
+    let penta = pentas[pentaIndex];
+    if (typeof penta.penta !== 'object') continue;
+
+    const pentaWithRotation = [];
+    const pentaStrings = [];
+
+    let mirrorIndex = 0;
+    do {
+        let rotateIndex = 0;
+        do {
+            const pentaStr = pentaToString(penta);
+            if (pentaStrings.indexOf(pentaStr) === -1) {
+                pentaStrings.push(pentaToString(penta));
+                pentaWithRotation.push(penta);    
+            }
+            penta = rotatePenta90(penta);    
+            rotateIndex++;
+        } while (rotateIndex < 4);
+
+        penta = mirrorPenta(penta);
+        mirrorIndex++;
+    } while (mirrorIndex < 2)
+
+    pentasWithReotation[pentaIndex] = pentaWithRotation;
 }
 
 const solution = solve(pentas, [2, 3, 10]);
