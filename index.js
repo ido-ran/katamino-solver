@@ -44,14 +44,14 @@ function getBoardCell(board, col, row) {
     return board.cells[index];
 }
 
-function canFitOnBoard(board, penta, cellIndex) {
-    const cellRow = cellIndex % 5;
-    const cellCol = Math.floor(cellIndex / 5);
+function canFitOnBoard(board, penta, cellCol, cellRow) {
+    // const cellRow = cellIndex % 5;
+    // const cellCol = Math.floor(cellIndex / 5);
 
-    const maxRow = cellRow + penta.rows;
-    const maxCol = cellCol + penta.cols;
+    const maxRow = cellRow + penta.rows - 1;
+    const maxCol = cellCol + penta.cols - 1;
 
-    const isOutOfBoard = (maxRow >= 5 || maxCol >= board.columns);
+    const isOutOfBoard = (maxRow >= 5 || maxCol >= board.columns || cellRow < 0 || maxCol < 0);
     if (isOutOfBoard) {
         return false;
     }
@@ -75,27 +75,32 @@ function canFitOnBoard(board, penta, cellIndex) {
     return true;
 }
 
-function addPentaToBoard(board, penta, cellIndex) {
-    const cellRow = cellIndex % 5;
-    const cellCol = Math.floor(cellIndex / 5);
+function addPentaToBoard(board, penta, cellCol, cellRow) {
+    // const cellRow = cellIndex % 5;
+    // const cellCol = Math.floor(cellIndex / 5);
 
     for (let row = 0; row < penta.rows; row++) {
         for (let col = 0; col < penta.cols; col++) {
             const index = col * penta.rows + row;
             const value = penta.penta[index];
-            setBoard(board, cellCol + col, cellRow + row, value);
+            if (value != 0) {
+                setBoard(board, cellCol + col, cellRow + row, value);
+            }
         }
     }
 }
 
-function removePentaFromBoard(board, penta, cellIndex) {
-    const cellRow = cellIndex % 5;
-    const cellCol = Math.floor(cellIndex / 5);
+function removePentaFromBoard(board, penta, cellCol, cellRow) {
+    // const cellRow = cellIndex % 5;
+    // const cellCol = Math.floor(cellIndex / 5);
 
     for (let row = 0; row < penta.rows; row++) {
         for (let col = 0; col < penta.cols; col++) {
             const index = col * penta.rows + row;
-            setBoard(board, cellCol + col, cellRow + row, 0);
+            const value = penta.penta[index];
+            if (value != 0) {
+                setBoard(board, cellCol + col, cellRow + row, 0);
+            }
         }
     }
 }
@@ -107,7 +112,7 @@ function printBoard(state) {
     for (let row = 0; row < ROWS; row++) {
         for (let col = 0; col < columns; col++) {
             const index = ROWS * col + row;
-            output += `${cells[index]}`
+            output += `${cells[index].toString(16)}`
 
             if (col < columns - 1) {
                 output += ' ';
@@ -266,19 +271,31 @@ function innerSolve(level, pentas, board) {
         return;
     }
 
+    const emptyCellRow = emptyCellIndex % 5;
+    const emptyCellCol = Math.floor(emptyCellIndex / 5);
+
     for (let pentaIndex = 0; pentaIndex < pentas.length; pentaIndex++) {
         const pentasWithReotation = pentas[pentaIndex];
         const allPentasButCurrent = pentas.concat();
         allPentasButCurrent.splice(pentaIndex, 1);
 
         for (penta of pentasWithReotation) {
-            if (canFitOnBoard(board, penta, emptyCellIndex)) {
-                addPentaToBoard(board, penta, emptyCellIndex);
-                const solution = innerSolve(level++, allPentasButCurrent, board);
-                if (solution) {
-                    return solution;
+            for (let offsetCol = 0; offsetCol <= penta.cols; offsetCol++) {
+                for (let offsetRow = 0; offsetRow <= penta.rows; offsetRow++) {
+
+                    const currCellCol = emptyCellCol - offsetCol;
+                    const currCellRow = emptyCellRow - offsetRow;
+
+                    if (canFitOnBoard(board, penta, currCellCol, currCellRow)) {
+                        addPentaToBoard(board, penta, currCellCol, currCellRow);
+                        const solution = innerSolve(level++, allPentasButCurrent, board);
+                        if (solution) {
+                            return solution;
+                        }
+                        removePentaFromBoard(board, penta, currCellCol, currCellRow);
+                    }
+        
                 }
-                removePentaFromBoard(board, penta, emptyCellIndex);
             }
         }
     }
