@@ -18,7 +18,7 @@ function createBoard(columns) {
 function copyBoard(board) {
     return {
         cells: board.cells.concat(),
-        columns
+        columns: board.columns,
     };
 }
 
@@ -206,7 +206,9 @@ function mirrorPenta(penta) {
 
 const pentas = [
     [],
-    [1],
+    createPenta(1,
+        5,
+        '*****'),
     createPenta(2,
         2,
         '**' +
@@ -219,18 +221,49 @@ const pentas = [
         ' *  ' +
         '****'
     ),
-    [4],
-    [5],
-    [6],
-    [7],
-    [8],
-    [9],
+    createPenta(4,
+        4,
+        '*** ' +
+        '  **'),
+    createPenta(5,
+        3,
+        '***' +
+        '  *' +
+        '  *'),
+    createPenta(6,
+        3,
+        ' **' +
+        '***'),
+    createPenta(7,
+        3,
+        '***' +
+        '* *'),
+    createPenta(8,
+        3,
+        '** ' +
+        ' * ' +
+        ' **'),
+    createPenta(9,
+        3,
+        ' * ' +
+        '** ' +
+        ' **'),
     createPenta(10,
         3,
         '***' +
         ' * ' +
         ' * '
     ),
+    createPenta(11,
+        3,
+        '  *' +
+        ' **' +
+        '** '),
+    createPenta(12,
+        3,
+        ' * ' +
+        '***' +
+        ' * ')
 ];
 
 function pentaToString(penta) {
@@ -252,7 +285,7 @@ function pentaToString(penta) {
 }
 
 function solve(allPentas, pentasIndecies) {
-    const board = createBoard(3);
+    const board = createBoard(pentasIndecies.length);
     const pentas = allPentas.filter((penta, index) => pentasIndecies.indexOf(index) !== -1);
     const solution = innerSolve(0, pentas, board);
     return solution;
@@ -279,9 +312,9 @@ function innerSolve(level, pentas, board) {
         const allPentasButCurrent = pentas.concat();
         allPentasButCurrent.splice(pentaIndex, 1);
 
-        for (penta of pentasWithReotation) {
-            for (let offsetCol = 0; offsetCol <= penta.cols; offsetCol++) {
-                for (let offsetRow = 0; offsetRow <= penta.rows; offsetRow++) {
+        for (let penta of pentasWithReotation) {
+            for (let offsetCol = 0; offsetCol < penta.cols; offsetCol++) {
+                for (let offsetRow = 0; offsetRow < penta.rows; offsetRow++) {
 
                     const currCellCol = emptyCellCol - offsetCol;
                     const currCellRow = emptyCellRow - offsetRow;
@@ -331,7 +364,7 @@ function prepareAndSolve() {
         pentasWithReotation[pentaIndex] = pentaWithRotation;
     }
 
-    const solution = solve(pentasWithReotation, [2, 3, 10]);
+    const solution = solve(pentasWithReotation, [3, 4, 5, 8, 12, 10, 6, 7, 9, 1, 11, 2]);
     console.log(solution);
 }
 
