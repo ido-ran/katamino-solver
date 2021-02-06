@@ -1,3 +1,4 @@
+const chalk = require('chalk');
 
 const ROWS = 5;
 
@@ -112,7 +113,8 @@ function printBoard(state) {
     for (let row = 0; row < ROWS; row++) {
         for (let col = 0; col < columns; col++) {
             const index = ROWS * col + row;
-            output += `${cells[index].toString(16)}`
+            const pentaId = cells[index];
+            output += chalk.keyword(pentas[pentaId].color).bold(`${pentaId.toString(16)}`)
 
             if (col < columns - 1) {
                 output += ' ';
@@ -124,7 +126,7 @@ function printBoard(state) {
     console.log(output);
 }
 
-function createPenta(pentaNumber, cols, str) {
+function createPenta(pentaNumber, color, cols, str) {
     const penta = [];
     const rows = str.length / cols;
 
@@ -137,7 +139,7 @@ function createPenta(pentaNumber, cols, str) {
         }
     }
 
-    return { penta, rows, cols, id: pentaNumber };
+    return { penta, rows, cols, id: pentaNumber, color };
 }
 
 /**
@@ -206,60 +208,60 @@ function mirrorPenta(penta) {
 
 const pentas = [
     [],
-    createPenta(1,
+    createPenta(1, 'blue',
         5,
         '*****'),
-    createPenta(2,
+    createPenta(2, 'darkorange',
         2,
         '**' +
         '* ' +
         '* ' +
         '* '
     ),
-    createPenta(3,
+    createPenta(3, 'sienna',
         4,
         ' *  ' +
         '****'
     ),
-    createPenta(4,
+    createPenta(4, 'slateblue',
         4,
         '*** ' +
         '  **'),
-    createPenta(5,
+    createPenta(5, 'skyblue',
         3,
         '***' +
         '  *' +
         '  *'),
-    createPenta(6,
+    createPenta(6, 'hotpink',
         3,
         ' **' +
         '***'),
-    createPenta(7,
+    createPenta(7, 'yellow',
         3,
         '***' +
         '* *'),
-    createPenta(8,
+    createPenta(8, 'turquoise',
         3,
         '** ' +
         ' * ' +
         ' **'),
-    createPenta(9,
+    createPenta(9, 'slategray',
         3,
         ' * ' +
         '** ' +
         ' **'),
-    createPenta(10,
+    createPenta(10, 'green',
         3,
         '***' +
         ' * ' +
         ' * '
     ),
-    createPenta(11,
+    createPenta(11, 'lime',
         3,
         '  *' +
         ' **' +
         '** '),
-    createPenta(12,
+    createPenta(12, 'red',
         3,
         ' * ' +
         '***' +
@@ -292,7 +294,7 @@ function solve(allPentas, pentasIndecies) {
 }
 
 function innerSolve(level, pentas, board) {
-    printBoard(board);
+    // printBoard(board);
     if (pentas.length === 0) {
         // success :)
         return copyBoard(board);
@@ -364,8 +366,8 @@ function prepareAndSolve() {
         pentasWithReotation[pentaIndex] = pentaWithRotation;
     }
 
-    const solution = solve(pentasWithReotation, [3, 4, 5, 8, 12, 10, 6, 7, 9, 1, 11, 2]);
-    console.log(solution);
+    const solution = solve(pentasWithReotation, [2, 5, 6, 8, 3, 11]);
+    printBoard(solution);
 }
 
 prepareAndSolve();
